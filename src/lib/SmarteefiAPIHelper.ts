@@ -1,10 +1,8 @@
 import { Logger } from "homebridge";
 import { Config, Device } from "./Config";
-import { HTMLElement, parse } from 'node-html-parser';
+import { parse } from 'node-html-parser';
+import request from 'request';
 
-const CryptoJS = require('crypto-js');
-const request = require('request');
-const URL = require('url');
 
 export class SmarteefiAPIHelper {
     private constructor(config: Config, log: Logger) {
@@ -17,11 +15,11 @@ export class SmarteefiAPIHelper {
         this.csrf = "";
     }
 
-    private accessToken: string = "";
-    private refreshToken: string = "";
-    private userid: string = "";
-    private password: string = "";
-    private apiHost: string = "";
+    private accessToken = "";
+    private refreshToken = "";
+    private userid = "";
+    private password = "";
+    private apiHost = "";
     private log: Logger;
     private config: Config;
     private static _instance: SmarteefiAPIHelper;
@@ -29,7 +27,7 @@ export class SmarteefiAPIHelper {
     private csrf: string;
 
     public static Instance(config: Config, log: Logger) {
-        var c = this._instance || (this._instance = new this(config, log));
+        const c = this._instance || (this._instance = new this(config, log));
         c.config = config;
         c.log = log;
         return c;
@@ -43,9 +41,9 @@ export class SmarteefiAPIHelper {
     }
 
     fetchDevices(devices: string[], cb) {
-        var discoveredDevices: Device[] = [];
-        var completedDevices = 0;
-        for (var index = 0; index < devices.length; index++) {
+        const discoveredDevices: Device[] = [];
+        let completedDevices = 0;
+        for (let index = 0; index < devices.length; index++) {
             const deviceId = devices[index];
             this._apiCall(`${this.apiHost}/namesettings?serial=${deviceId}`, "GET", {}, (_body, err) => {
                 if (err) {
@@ -55,14 +53,14 @@ export class SmarteefiAPIHelper {
                     //this.log.info(_body)
                     const body = parse(_body);
                     //this.log.info(body.toString());
-                    var devicesAvailable = true;
-                    var counter = 0;
+                    let devicesAvailable = true;
+                    let counter = 0;
 
                     while (devicesAvailable) {
-                        var device = body.querySelector(`#deviceconfig-switchnames-${counter}`);
+                        const device = body.querySelector(`#deviceconfig-switchnames-${counter}`);
                         if (device != null) {
                             this.log.info(`Discovered switch ${device.attributes['value']}`)
-                            let dev = new Device(deviceId, counter, device.attributes['value']);
+                            const dev = new Device(deviceId, counter, device.attributes['value']);
                             discoveredDevices.push(dev);
                             counter++;
                         } else {
@@ -81,13 +79,13 @@ export class SmarteefiAPIHelper {
     }
 
     setSwitchStatus(deviceId: string, switchmap: number, statusmap: number, cb) {
-        var commandObj = { "DeviceStatus": { "serial": deviceId, "switchmap": switchmap, "statusmap": statusmap } }
+        const commandObj = { "DeviceStatus": { "serial": deviceId, "switchmap": switchmap, "statusmap": statusmap } }
 
-        var url = `${this.apiHost}/setstatus`;
+        const url = `${this.apiHost}/setstatus`;
 
         this.log.debug(JSON.stringify(commandObj));
         this._apiCall(url, "PUT", commandObj, (_body, err) => {
-            var body = {
+            let body = {
                 "result": "failure",
                 "switchmap": 0,
                 "statusmap": 0
@@ -101,13 +99,13 @@ export class SmarteefiAPIHelper {
 
     getSwitchStatus(deviceId: string, switchmap: number, cb) {
         this.log.debug(`Getting switch status for ${deviceId}...`);
-        var commandObj = { "DeviceStatus": { "serial": deviceId, "switchmap": switchmap } }
+        const commandObj = { "DeviceStatus": { "serial": deviceId, "switchmap": switchmap } }
 
-        var url = `${this.apiHost}/getstatus`;
+        const url = `${this.apiHost}/getstatus`;
 
         this.log.debug(JSON.stringify(commandObj));
         this._apiCall(url, "PUT", commandObj, (_body, err) => {
-            var body = {
+            let body = {
                 "result": "error",
                 "switchmap": 0,
                 "statusmap": 0
@@ -115,6 +113,7 @@ export class SmarteefiAPIHelper {
             if (!err) {
                 try {
                     body = JSON.parse(_body);
+                // eslint-disable-next-line no-empty
                 } catch (error) { }
             }
             cb(body);
@@ -122,8 +121,9 @@ export class SmarteefiAPIHelper {
     }
 
     _loginApiCall(endpoint: string, body: object, cb) {
-        var _this = this;
-        var options = {
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        const _this = this;
+        const options = {
             url: endpoint
         };
 
@@ -131,17 +131,17 @@ export class SmarteefiAPIHelper {
             if (error) {
                 cb();
                 return;
-            };
+            }
             _this.log.debug("API call successful.");
             _this.setCookie(response);
-            var b = parse("<p>Error</p>");
+            let b = parse("<p>Error</p>");
             try {
                 b = parse(body);
             } catch (error) {
                 cb(b);
             }
             _this.csrf = "" + b?.querySelector("input[type=hidden]")?.attributes['value'];
-            var _options = {
+            const _options = {
                 url: endpoint,
                 'headers': {
                     'host': 'www.smarteefi.com',
@@ -162,9 +162,9 @@ export class SmarteefiAPIHelper {
             }
 
             request.post(_options, function (error2, response2, body2) {
-                let b = parse(body2);
-                let e = b?.querySelector(".site-error h1")?.innerHTML;
-                let title = "" + b?.querySelector("title")?.innerHTML;
+                const b = parse(body2);
+                const e = b?.querySelector(".site-error h1")?.innerHTML;
+                const title = "" + b?.querySelector("title")?.innerHTML;
                 _this.log.debug(response2.statusCode)
                 if (error2 || e || response2.statusCode >= 400 || title == "Login") {
                     _this.log.error("Unable to login. Please verify user id and password and restart homebridge.");
@@ -172,7 +172,7 @@ export class SmarteefiAPIHelper {
                 } else {
                     _this.setCookie(response2);
                     _this.log.debug(b.toString())
-                    cb(b.toString() || {"status":"success"});
+                    cb(b.toString() || { "status": "success" });
                 }
             })
         })
@@ -183,9 +183,10 @@ export class SmarteefiAPIHelper {
     }
     _apiCall(endpoint: string, method: string, body: object, cb) {
         this.log.debug(`Calling endpoint ${endpoint}`);
-        var _this = this;
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        const _this = this;
         //this._calculateSign(true, url.query, url.pathname, method, JSON.stringify(body));
-        var options = method == "GET" ? {
+        const options = method == "GET" ? {
             method: method,
             url: endpoint,
             headers: {
@@ -216,12 +217,12 @@ export class SmarteefiAPIHelper {
     }
 
     setCookie(resp) {
-        var x = ("" + resp.headers['set-cookie']).split(",");
-        for (var i = 0; i < x.length; i++) {
-            let mcookie = x[i].split(";");
-            for (var j = 0; j < mcookie.length; j++) {
-                let cookie = mcookie[j];
-                var parts = cookie.match(/(.*?)=(.*)$/) || "";
+        const x = ("" + resp.headers['set-cookie']).split(",");
+        for (let i = 0; i < x.length; i++) {
+            const mcookie = x[i].split(";");
+            for (let j = 0; j < mcookie.length; j++) {
+                const cookie = mcookie[j];
+                const parts = cookie.match(/(.*?)=(.*)$/) || "";
                 this.cookie[parts[1]?.trim()] = (parts[2] || '').trim();
             }
         }

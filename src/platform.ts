@@ -6,9 +6,6 @@ import { SmarteefiAPIHelper } from './lib/SmarteefiAPIHelper';
 
 const PLATFORM_NAME = 'Smarteefi';
 const PLUGIN_NAME = 'homebridge-smarteefi';
-const CLASS_DEF = {
-
-};
 /**
  * HomebridgePlatform
  * This class is the main constructor for your plugin, this is where you should
@@ -20,9 +17,8 @@ export class SmarteefiPlatform implements DynamicPlatformPlugin {
 
   // this is used to track restored cached accessories
   public readonly accessories: PlatformAccessory[] = [];
-  public cachedAccessories: Map<any, any> = new Map();
-  public early: boolean = false;
-  private refreshDelay: number = 60000;
+  public early = false;
+  private refreshDelay = 60000;
   private deviceStatus: DeviceStatus = DeviceStatus.Instance();
 
 
@@ -64,7 +60,6 @@ export class SmarteefiPlatform implements DynamicPlatformPlugin {
    */
   discoverDevices() {
 
-    const devices = {};
     //if (!this.config.devices) return this.log.error("No devices configured. Please configure atleast one device.");
     //if (!this.config.client_id) return this.log.error("Client ID is not configured. Please check your config.json");
     //if (!this.config.secret) return this.log.error("Client Secret is not configured. Please check your config.json");
@@ -72,7 +67,7 @@ export class SmarteefiPlatform implements DynamicPlatformPlugin {
     //if (!this.config.deviceId) return this.log.error("IR Blaster device ID is not configured. Please check your config.json");
 
     this.log.info('Starting discovery...');
-    var smarteefi: SmarteefiDiscovery = new SmarteefiDiscovery(this.log, this.api);
+    const smarteefi: SmarteefiDiscovery = new SmarteefiDiscovery(this.log, this.api);
     this.discover(smarteefi, 0, this.config.devices.length);
   }
 
@@ -81,7 +76,7 @@ export class SmarteefiPlatform implements DynamicPlatformPlugin {
 
       this.log.debug(JSON.stringify(devices));
       //loop over the discovered devices and register each one if it has not already been registered
-      for (var device of devices) {
+      for (const device of devices) {
         if (device) {
 
           // generate a unique id for the accessory this should be generated from
@@ -154,11 +149,11 @@ export class SmarteefiPlatform implements DynamicPlatformPlugin {
   }
 
   refreshStatus(_this) {
-    let totalDevices = _this.config.devices.length;
-    let apiHelper = SmarteefiAPIHelper.Instance(new Config(_this.config.userid, _this.config.password, _this.config.devices), _this.log);
-    var completedUpdated = 0;
-    for (var x = 0; x < totalDevices; x++) {
-      let deviceId = _this.config.devices[x];
+    const totalDevices = _this.config.devices.length;
+    const apiHelper = SmarteefiAPIHelper.Instance(new Config(_this.config.userid, _this.config.password, _this.config.devices), _this.log);
+    let completedUpdated = 0;
+    for (let x = 0; x < totalDevices; x++) {
+      const deviceId = _this.config.devices[x];
       apiHelper.getSwitchStatus(deviceId, 255, function (body) {
         _this.log.debug(JSON.stringify(body));
         if (body.result == "error") {
@@ -166,12 +161,12 @@ export class SmarteefiPlatform implements DynamicPlatformPlugin {
           _this.deviceStatus.setStatusMap(deviceId, -1, -1);
         } else {
           _this.deviceStatus.setStatusMap(deviceId, body.switchmap, body.statusmap);
-          var totalSwitches = _this.accessories.length;
-          for (var i = 0; i < totalSwitches; i++) {
-            let acc = _this.accessories[i];
+          const totalSwitches = _this.accessories.length;
+          for (let i = 0; i < totalSwitches; i++) {
+            const acc = _this.accessories[i];
             if (acc.context.device.id == deviceId) {
-              let svc = acc.getService(_this.Service.Switch);
-              let status = _this.decodeStatus(acc.context.device.sequence, acc.context.device.id);
+              const svc = acc.getService(_this.Service.Switch);
+              const status = _this.decodeStatus(acc.context.device.sequence, acc.context.device.id);
               svc?.updateCharacteristic(_this.Characteristic.On, status);
               _this.log.debug(`Status updated for '${acc.displayName}' to '${status == 0 ? "Off" : "On"}'`);
             }
@@ -186,7 +181,7 @@ export class SmarteefiPlatform implements DynamicPlatformPlugin {
     }
   }
   decodeStatus(sequence: number, deviceId: string) {
-    let switchmap = Math.pow(2, sequence);
+    const switchmap = Math.pow(2, sequence);
     let statusmap = this.deviceStatus.getStatusMap(deviceId)?.statusmap || 0;
     statusmap &= switchmap;
     if (statusmap == 0) {

@@ -19,22 +19,16 @@ export class SwitchAccessory {
         On: this.platform.Characteristic.Active.INACTIVE
     };
 
-    private parentId: string = "";
     private apiHelper: SmarteefiAPIHelper;
-    private powerCommand: number = 1;
     private deviceStatus: DeviceStatus = DeviceStatus.Instance();
 
     constructor(
         private readonly platform: SmarteefiPlatform,
         private readonly accessory: PlatformAccessory,
     ) {
-        this.parentId = accessory.context.device.ir_id;
         this.apiHelper = SmarteefiAPIHelper.Instance(new Config(platform.config.userid, platform.config.password, platform.config.devices), platform.log);
         // set accessory information
-        this.accessory.getService(this.platform.Service.AccessoryInformation)!
-            .setCharacteristic(this.platform.Characteristic.Manufacturer, 'Smarteefi')
-            .setCharacteristic(this.platform.Characteristic.Model, 'Smart Switch')
-            .setCharacteristic(this.platform.Characteristic.SerialNumber, accessory.context.device.id);
+        this.accessory.getService(this.platform.Service.AccessoryInformation)?.setCharacteristic(this.platform.Characteristic.Manufacturer, 'Smarteefi')?.setCharacteristic(this.platform.Characteristic.Model, 'Smart Switch')?.setCharacteristic(this.platform.Characteristic.SerialNumber, accessory.context.device.id);
 
         // get the LightBulb service if it exists, otherwise create a new LightBulb service
         // you can create multiple services for each accessory
@@ -54,11 +48,6 @@ export class SwitchAccessory {
 
     }
 
-    setup(platform: SmarteefiPlatform, accessory: PlatformAccessory) {
-
-
-    }
-
     /**
      * Handle "SET" requests from HomeKit
      * These are sent when the user changes the state of an accessory, for example, turning on a Light bulb.
@@ -66,8 +55,7 @@ export class SwitchAccessory {
     async setOn(value: CharacteristicValue) {
         // implement your own code to turn your device on/off
 
-        var command = this.powerCommand;
-        let switchmap = Math.pow(2, this.accessory.context.device.sequence);
+        const switchmap = Math.pow(2, this.accessory.context.device.sequence);
         let statusmap = this.deviceStatus.getStatusMap(this.accessory.context.device.id)?.statusmap || 0;
         if (this.switchStates.On == (value as number)) {
             statusmap &= ~switchmap;
@@ -81,8 +69,7 @@ export class SwitchAccessory {
                 this.platform.log.error(`Failed to change device status due to error ${body.msg}`);
             } else {
                 this.platform.log.info(`${this.accessory.displayName} is now ${(value as number) == 0 ? 'Off' : 'On'}`);
-                var _this = this;
-                setImmediate(this.platform.refreshStatus,this.platform);
+                setImmediate(this.platform.refreshStatus, this.platform);
             }
         });
 
@@ -102,9 +89,9 @@ export class SwitchAccessory {
      * this.service.updateCharacteristic(this.platform.Characteristic.On, true)
      */
     async getOn(): Promise<CharacteristicValue> {
-        let switchmap = Math.pow(2, this.accessory.context.device.sequence);
+        const switchmap = Math.pow(2, this.accessory.context.device.sequence);
         let statusmap = this.deviceStatus.getStatusMap(this.accessory.context.device.id)?.statusmap || 0;
-        if(statusmap == -1) {
+        if (statusmap == -1) {
             throw new this.platform.api.hap.HapStatusError(this.platform.api.hap.HAPStatus.SERVICE_COMMUNICATION_FAILURE);
         }
         statusmap &= switchmap;

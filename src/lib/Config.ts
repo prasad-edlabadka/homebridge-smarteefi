@@ -1,8 +1,6 @@
-import { Logger } from "homebridge";
-
 export class Config {
-    public userid: string = "";
-    public password: string = "";
+    public userid = "";
+    public password = "";
     public devices: string[] = [];
     constructor(userid?: string, password?: string, devices?: string[]) {
         this.userid = userid || "";
@@ -12,9 +10,9 @@ export class Config {
 }
 
 export class Device {
-    public id: string = "";
-    public name: string = "Unknown";
-    public sequence: number = 0;
+    public id = "";
+    public name = "Unknown";
+    public sequence = 0;
     constructor(id, sequence, name) {
         this.id    = id;
         this.sequence = sequence;
@@ -23,9 +21,9 @@ export class Device {
 }
 
 export class Status {
-    public id: string = "";
-    public switchmap: number = 255;
-    public statusmap: number = 0;
+    public id = "";
+    public switchmap = 255;
+    public statusmap = 0;
     constructor(id, switchmap, statusmap) {
         this.id = id;
         this.switchmap = switchmap;
@@ -36,9 +34,7 @@ export class Status {
 export class DeviceStatus {
     public statuses: Status[] = [];
     private static _instance: DeviceStatus;
-    constructor() {
-        
-    }
+  
     getStatusMap (id: string) {
         return this.statuses.find(value => {
             if(value.id == id) {
@@ -61,7 +57,7 @@ export class DeviceStatus {
         }
     }
     public static Instance() {
-        var c = this._instance || (this._instance = new this());
+        const c = this._instance || (this._instance = new this());
         return c;
     }
 }

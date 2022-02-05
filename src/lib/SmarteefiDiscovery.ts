@@ -1,4 +1,4 @@
-const EventEmitter = require('events');
+import EventEmitter from 'events';
 import { API, Logger } from 'homebridge';
 import { Config, Device } from './Config';
 import { SmarteefiAPIHelper } from './SmarteefiAPIHelper';
@@ -18,7 +18,7 @@ export class SmarteefiDiscovery extends EventEmitter {
     start(api, props, index, cb) {
         this.log.info(`Trying to login...`);
         this.config = new Config(props.userid, props.password, props.devices);
-        var helper = SmarteefiAPIHelper.Instance(this.config, this.log);
+        const helper = SmarteefiAPIHelper.Instance(this.config, this.log);
         helper.login((b) => {
             if (!b) {
                 cb([], -1);
