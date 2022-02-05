@@ -25,7 +25,7 @@ Control your Smarteefi Switchbaord based devices in HomeKit. You can add multipl
 
 #### Option 1: Install via Homebridge Config UI X:
 
-Search for "Tuya IR" in [homebridge-config-ui-x](https://github.com/oznu/homebridge-config-ui-x) and install `homebridge-smarteefi`.
+Search for "Smarteefi" in [homebridge-config-ui-x](https://github.com/oznu/homebridge-config-ui-x) and install `homebridge-smarteefi`.
 
 #### Option 2: Manually Install:
 
