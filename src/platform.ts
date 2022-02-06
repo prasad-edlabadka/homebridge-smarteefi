@@ -148,7 +148,7 @@ export class SmarteefiPlatform implements DynamicPlatformPlugin {
     });
   }
 
-  refreshStatus(_this) {
+  refreshStatus(_this, onetime = false) {
     const totalDevices = _this.config.devices.length;
     const apiHelper = SmarteefiAPIHelper.Instance(new Config(_this.config.userid, _this.config.password, _this.config.devices), _this.log);
     let completedUpdated = 0;
@@ -175,7 +175,9 @@ export class SmarteefiPlatform implements DynamicPlatformPlugin {
         completedUpdated++;
         if (completedUpdated >= totalDevices) {
           _this.log.info("Status refreshed for " + deviceId);
-          setTimeout(_this.refreshStatus, _this.refreshDelay, _this);
+          if (!onetime) {
+            setTimeout(_this.refreshStatus, _this.refreshDelay, _this);
+          }
         }
       });
     }

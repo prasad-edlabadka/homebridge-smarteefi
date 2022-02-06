@@ -28,7 +28,6 @@
     "homebridge-smarteefi"
   ],
   "dependencies": {
-    "crypto-js": "^4.0.0",
     "node-html-parser": "^5.2.0",
     "request": "^2.88.2",
     "request-promise": "^4.2.6"

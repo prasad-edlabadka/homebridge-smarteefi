@@ -15,8 +15,6 @@ export class SmarteefiAPIHelper {
         this.csrf = "";
     }
 
-    private accessToken = "";
-    private refreshToken = "";
     private userid = "";
     private password = "";
     private apiHost = "";
@@ -30,6 +28,7 @@ export class SmarteefiAPIHelper {
         const c = this._instance || (this._instance = new this(config, log));
         c.config = config;
         c.log = log;
+
         return c;
     }
 
@@ -78,13 +77,12 @@ export class SmarteefiAPIHelper {
         }
     }
 
-    setSwitchStatus(deviceId: string, switchmap: number, statusmap: number, cb) {
+    async setSwitchStatus(deviceId: string, switchmap: number, statusmap: number, cb) {
         const commandObj = { "DeviceStatus": { "serial": deviceId, "switchmap": switchmap, "statusmap": statusmap } }
-
         const url = `${this.apiHost}/setstatus`;
-
         this.log.debug(JSON.stringify(commandObj));
-        this._apiCall(url, "PUT", commandObj, (_body, err) => {
+
+        await this._apiCall(url, "PUT", commandObj, (_body, err) => {
             let body = {
                 "result": "failure",
                 "switchmap": 0,
@@ -97,14 +95,14 @@ export class SmarteefiAPIHelper {
         })
     }
 
-    getSwitchStatus(deviceId: string, switchmap: number, cb) {
+    async getSwitchStatus(deviceId: string, switchmap: number, cb) {
         this.log.debug(`Getting switch status for ${deviceId}...`);
         const commandObj = { "DeviceStatus": { "serial": deviceId, "switchmap": switchmap } }
 
         const url = `${this.apiHost}/getstatus`;
 
         this.log.debug(JSON.stringify(commandObj));
-        this._apiCall(url, "PUT", commandObj, (_body, err) => {
+        await this._apiCall(url, "PUT", commandObj, (_body, err) => {
             let body = {
                 "result": "error",
                 "switchmap": 0,
@@ -181,7 +179,7 @@ export class SmarteefiAPIHelper {
                 _this.log.error(err);
             })
     }
-    _apiCall(endpoint: string, method: string, body: object, cb) {
+    async _apiCall(endpoint: string, method: string, body: object, cb) {
         this.log.debug(`Calling endpoint ${endpoint}`);
         // eslint-disable-next-line @typescript-eslint/no-this-alias
         const _this = this;

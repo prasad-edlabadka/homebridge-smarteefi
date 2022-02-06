@@ -69,7 +69,7 @@ export class SwitchAccessory {
                 this.platform.log.error(`Failed to change device status due to error ${body.msg}`);
             } else {
                 this.platform.log.info(`${this.accessory.displayName} is now ${(value as number) == 0 ? 'Off' : 'On'}`);
-                setImmediate(this.platform.refreshStatus, this.platform);
+                setImmediate(this.platform.refreshStatus, this.platform, true);
             }
         });
 
