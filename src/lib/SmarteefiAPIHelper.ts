@@ -89,7 +89,10 @@ export class SmarteefiAPIHelper {
                 "statusmap": 0
             }
             if (!err) {
-                body = JSON.parse(_body);
+                try {
+                    body = JSON.parse(_body);
+                    // eslint-disable-next-line no-empty
+                } catch (error) { }
             }
             cb(body);
         })
@@ -111,7 +114,7 @@ export class SmarteefiAPIHelper {
             if (!err) {
                 try {
                     body = JSON.parse(_body);
-                // eslint-disable-next-line no-empty
+                    // eslint-disable-next-line no-empty
                 } catch (error) { }
             }
             cb(body);
@@ -160,9 +163,15 @@ export class SmarteefiAPIHelper {
             }
 
             request.post(_options, function (error2, response2, body2) {
-                const b = parse(body2);
-                const e = b?.querySelector(".site-error h1")?.innerHTML;
-                const title = "" + b?.querySelector("title")?.innerHTML;
+                let e: string | undefined, title: string | undefined;
+                try {
+                    const b = parse(body2);
+                    e = b?.querySelector(".site-error h1")?.innerHTML;
+                    title = "" + b?.querySelector("title")?.innerHTML;
+                    // eslint-disable-next-line no-empty
+                } catch (error) {
+                    _this.log.error("Unable to parse body or HTML");
+                }
                 _this.log.debug(response2.statusCode)
                 if (error2 || e || response2.statusCode >= 400 || title == "Login") {
                     _this.log.error("Unable to login. Please verify user id and password and restart homebridge.");
