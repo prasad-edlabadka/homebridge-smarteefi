@@ -35,7 +35,14 @@ export class SmarteefiAPIHelper {
     login(cb) {
         this.log.info(`Logging in to the server ${this.apiHost}...`);
         this._loginApiCall(this.apiHost + "/login", {}, (_body) => {
-            cb(_body);
+            if(!_body) {
+                this.log.warn("Unable to login. Retrying after 60 seconds...");
+                setTimeout(() => {
+                    this.login(cb);
+                }, 60000);
+            } else {
+                cb(_body);
+            }
         });
     }
 
@@ -139,7 +146,8 @@ export class SmarteefiAPIHelper {
             try {
                 b = parse(body);
             } catch (error) {
-                cb(b);
+                _this.log.error("" + error, b);
+                cb();
             }
             _this.csrf = "" + b?.querySelector("input[type=hidden]")?.attributes['value'];
             const _options = {
@@ -186,6 +194,7 @@ export class SmarteefiAPIHelper {
             .on('error', (err) => {
                 _this.log.error("API call failed.");
                 _this.log.error(err);
+                cb();
             })
     }
     async _apiCall(endpoint: string, method: string, body: object, cb) {
