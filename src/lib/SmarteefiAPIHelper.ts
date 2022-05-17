@@ -132,7 +132,8 @@ export class SmarteefiAPIHelper {
         // eslint-disable-next-line @typescript-eslint/no-this-alias
         const _this = this;
         const options = {
-            url: endpoint
+            url: endpoint,
+            forever: true
         };
 
         request.get(options, function (error, response, body) {
@@ -152,6 +153,7 @@ export class SmarteefiAPIHelper {
             _this.csrf = "" + b?.querySelector("input[type=hidden]")?.attributes['value'];
             const _options = {
                 url: endpoint,
+                forever: true,
                 'headers': {
                     'host': 'www.smarteefi.com',
                     'content-type': 'application/x-www-form-urlencoded',
@@ -205,6 +207,7 @@ export class SmarteefiAPIHelper {
         const options = method == "GET" ? {
             method: method,
             url: endpoint,
+            forever: true,
             headers: {
                 'cookie': `PHPSESSID=${_this.cookie['PHPSESSID']}; _csrf=${_this.cookie['_csrf']}`,
                 'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1 Safari/605.1.15',
@@ -213,6 +216,7 @@ export class SmarteefiAPIHelper {
         } : {
             method: method,
             url: endpoint,
+            forever: true,
             headers: {
                 'cookie': `PHPSESSID=${_this.cookie['PHPSESSID']}; _csrf=${_this.cookie['_csrf']}`,
                 'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1 Safari/605.1.15',
