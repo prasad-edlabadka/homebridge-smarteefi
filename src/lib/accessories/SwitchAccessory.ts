@@ -55,7 +55,7 @@ export class SwitchAccessory {
     async setOn(value: CharacteristicValue) {
         // implement your own code to turn your device on/off
 
-        const switchmap = Math.pow(2, this.accessory.context.device.sequence);
+        const switchmap = this.accessory.context.device.sequence;
         let statusmap = this.deviceStatus.getStatusMap(this.accessory.context.device.id)?.statusmap || 0;
         if (this.switchStates.On == (value as number)) {
             statusmap &= ~switchmap;

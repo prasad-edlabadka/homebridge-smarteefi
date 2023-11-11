@@ -172,7 +172,7 @@ export class SmarteefiPlatform implements DynamicPlatformPlugin {
             }
           }
         }
-        completedUpdated++;
+        completedUpdated++; 
         if (completedUpdated >= totalDevices) {
           _this.log.info("Status refreshed for " + deviceId);
           if (!onetime) {
@@ -183,7 +183,8 @@ export class SmarteefiPlatform implements DynamicPlatformPlugin {
     }
   }
   decodeStatus(sequence: number, deviceId: string) {
-    const switchmap = Math.pow(2, sequence);
+    this.log.warn("", sequence, deviceId)
+    const switchmap = sequence;
     let statusmap = this.deviceStatus.getStatusMap(deviceId)?.statusmap || 0;
     statusmap &= switchmap;
     if (statusmap == 0) {
@@ -198,7 +199,7 @@ export class SmarteefiPlatform implements DynamicPlatformPlugin {
       case 6:
         return "Device offline";
       default:
-        return "Unknown error: " + code;
+        return "Unknown error: " + code; 
     }
   }
 }
