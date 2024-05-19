@@ -1,8 +1,9 @@
 import { Service, PlatformAccessory, CharacteristicValue } from 'homebridge';
-import { SmarteefiPlatform } from '../../platform';
+// import { SmarteefiPlatform } from '../../platform';
 import { Config, DeviceStatus } from '../Config';
 import { SmarteefiAPIHelper } from '../SmarteefiAPIHelper';
 import { stat } from 'fs';
+import SmarteefiPlatform from '../../platform';
 
 /**
  * Generic Accessory
@@ -10,19 +11,6 @@ import { stat } from 'fs';
  * Each accessory may expose multiple services of different service types.
  */
 export class SwitchAccessory {
-  private service: Service;
-
-  /**
-   * These are just used to create a working example
-   * You should implement your own code to track the state of your accessory
-   */
-  private switchStates = {
-    On: this.platform.Characteristic.Active.INACTIVE,
-  };
-
-  private apiHelper: SmarteefiAPIHelper;
-  private deviceStatus: DeviceStatus = DeviceStatus.Instance();
-
   constructor(
     private readonly platform: SmarteefiPlatform,
     private readonly accessory: PlatformAccessory,
@@ -70,6 +58,19 @@ export class SwitchAccessory {
       .onSet(this.setOn.bind(this)) // SET - bind to the `setOn` method below
       .onGet(this.getOn.bind(this)); // GET - bind to the `getOn` method below
   }
+
+  private service: Service;
+
+  /**
+   * These are just used to create a working example
+   * You should implement your own code to track the state of your accessory
+   */
+  private switchStates = {
+    On: this.platform.Characteristic.Active.INACTIVE,
+  };
+
+  private apiHelper: SmarteefiAPIHelper;
+  private deviceStatus: DeviceStatus = DeviceStatus.Instance();
 
   /**
    * Handle "SET" requests from HomeKit
