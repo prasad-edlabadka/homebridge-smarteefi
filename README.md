@@ -15,6 +15,7 @@
 ![GitHub contributors](https://img.shields.io/github/contributors-anon/prasad-edlabadka/homebridge-smarteefi)
 ![GitHub last commit](https://img.shields.io/github/last-commit/prasad-edlabadka/homebridge-smarteefi)
 
+[![verified-by-homebridge](https://img.shields.io/badge/homebridge-verified-blueviolet?color=%23491F59&style=for-the-badge&logoColor=%23FFFFFF&logo=homebridge)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
 
 Control your Smarteefi Switchbaord based devices in HomeKit. You can add multiple devices / switchboards to a single configuration.
 
