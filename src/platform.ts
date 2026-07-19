@@ -13,7 +13,7 @@ import { Config, Device, DeviceStatus } from './lib/Config';
 import { SmarteefiAPIHelper } from './lib/SmarteefiAPIHelper';
 
 const PLATFORM_NAME = 'Smarteefi';
-const PLUGIN_NAME = 'homebridge-smarteefi';
+const PLUGIN_NAME = '@prasad.edlabadkar/homebridge-smarteefi';
 /**
  * HomebridgePlatform
  * This class is the main constructor for your plugin, this is where you should
