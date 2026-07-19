@@ -35,8 +35,8 @@ export default class SmarteefiPlatform implements DynamicPlatformPlugin {
     public readonly config: PlatformConfig,
     public readonly api: API,
   ) {
-    this.log.debug('Finished initializing platform:', this.config.name);
-    this.refreshDelay = this.config.refreshDelay || 60000;
+    this.log.debug('Finished initializing platform:', this.config ? this.config.name : 'undefined');
+    this.refreshDelay = this.config ? (Number(this.config.refreshDelay) || 60000) : 60000;
 
     // When this event is fired it means Homebridge has restored all cached accessories from disk.
     // Dynamic Platform plugins should only register new accessories after this event was fired,
@@ -66,11 +66,10 @@ export default class SmarteefiPlatform implements DynamicPlatformPlugin {
    * must not be registered again to prevent "duplicate UUID" errors.
    */
   discoverDevices() {
-    //if (!this.config.devices) return this.log.error("No devices configured. Please configure atleast one device.");
-    //if (!this.config.client_id) return this.log.error("Client ID is not configured. Please check your config.json");
-    //if (!this.config.secret) return this.log.error("Client Secret is not configured. Please check your config.json");
-    //if (!this.config.region) return this.log.error("Region is not configured. Please check your config.json");
-    //if (!this.config.deviceId) return this.log.error("IR Blaster device ID is not configured. Please check your config.json");
+    if (!this.config || !this.config.userid || !this.config.password || !this.config.devices || !Array.isArray(this.config.devices) || this.config.devices.length === 0) {
+      this.log.warn('Platform Smarteefi has not been fully configured yet. Missing userid, password, or devices array. Skipping device discovery.');
+      return;
+    }
 
     this.log.info('Starting discovery...');
     const smarteefi: SmarteefiDiscovery = new SmarteefiDiscovery(
@@ -172,6 +171,9 @@ export default class SmarteefiPlatform implements DynamicPlatformPlugin {
   }
 
   refreshStatus(_this, onetime = false) {
+    if (!_this.config || !_this.config.devices || !Array.isArray(_this.config.devices)) {
+      return;
+    }
     const totalDevices = _this.config.devices.length;
     const apiHelper = SmarteefiAPIHelper.Instance(
       new Config(

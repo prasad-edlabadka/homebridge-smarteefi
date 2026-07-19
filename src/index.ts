@@ -6,6 +6,6 @@ const PLATFORM_NAME = 'Smarteefi';
 /**
  * This method registers the platform with Homebridge
  */
-export default (api: API) => {
+export = (api: API) => {
   api.registerPlatform(PLATFORM_NAME, SmarteefiPlatform);
 };

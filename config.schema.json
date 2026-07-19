@@ -29,7 +29,7 @@
         "title": "Polling frequency for status refresh (milliseconds)",
         "type": "number",
         "required": true,
-        "default": "60000",
+        "default": 60000,
         "description": "Polling frequency for status refresh (milliseconds)"
       },
       "devices": {
@@ -43,6 +43,11 @@
           "description": "Smarteefi Device ID"
         }
       }
-    }
+    },
+    "required": [
+      "name",
+      "userid",
+      "password"
+    ]
   }
 }

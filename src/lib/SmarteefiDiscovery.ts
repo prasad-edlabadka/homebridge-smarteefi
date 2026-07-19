@@ -26,7 +26,9 @@ export class SmarteefiDiscovery extends EventEmitter {
                 this.log.info("Fetching configured switches...");
                 helper.fetchDevices(this.config.devices, (devs: Device[]) => {
                     if (!devs) {
-                        throw new this.api.hap.HapStatusError(this.api.hap.HAPStatus.SERVICE_COMMUNICATION_FAILURE);
+                        this.log.error("Failed to fetch devices from Smarteefi. Check your internet connection or credentials.");
+                        cb([], -1);
+                        return;
                     }
                     cb(devs, 0);
                 });
