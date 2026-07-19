@@ -2,7 +2,7 @@
   "private": false,
   "displayName": "Homebridge Smarteefi Platform",
   "name": "@prasad.edlabadkar/homebridge-smarteefi",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Allows homebridge to control Smarteefi based devices",
   "license": "Apache-2.0",
   "repository": {
