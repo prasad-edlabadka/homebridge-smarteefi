@@ -1,6 +1,5 @@
 import { Logger } from "homebridge";
 import { Config, Device } from "./Config";
-import request from 'request';
 
 
 export class SmarteefiAPIHelper {
@@ -141,36 +140,27 @@ export class SmarteefiAPIHelper {
     }
     async _apiCall(endpoint: string, method: string, body: object, cb) {
         this.log.debug(`Calling endpoint ${endpoint}`);
-        // eslint-disable-next-line @typescript-eslint/no-this-alias
-        const _this = this;
-        //this._calculateSign(true, url.query, url.pathname, method, JSON.stringify(body));
-        const options = method == "GET" ? {
-            method: method,
-            url: endpoint,
-            forever: true,
-            headers: {
-                'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1 Safari/605.1.15',
-                'accept-language': 'en-IN,en-GB;q=0.9,en;q=0.8'
-            }
-        } : {
-            method: method,
-            url: endpoint,
-            forever: true,
-            headers: {
-                'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1 Safari/605.1.15',
-                'accept-language': 'en-IN,en-GB;q=0.9,en;q=0.8',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(body)
+        const headers = {
+            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1 Safari/605.1.15',
+            'accept-language': 'en-IN,en-GB;q=0.9,en;q=0.8',
+            ...(method !== 'GET' ? { 'Content-Type': 'application/json' } : {})
         };
-        request(options, function (error, response, body) {
-            // body is the decompressed response body
-            _this.log.debug("API call successful.");
-            cb(body, error);
-        })
-            .on('error', (err) => {
-                _this.log.error("API call failed.");
-                _this.log.error(err);
-            })
+        const options: RequestInit = {
+            method: method,
+            headers: headers,
+        };
+        if (method !== 'GET') {
+            options.body = JSON.stringify(body);
+        }
+
+        try {
+            const response = await fetch(endpoint, options);
+            const responseBody = await response.text();
+            this.log.debug("API call successful.");
+            cb(responseBody, null);
+        } catch (err) {
+            this.log.error("API call failed: " + (err as Error).message);
+            cb(undefined, err);
+        }
     }
 }
